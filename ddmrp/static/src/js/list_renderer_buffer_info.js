@@ -23,12 +23,12 @@ odoo.define("ddmrp.list_renderer_buffer_info", function(require) {
         },
         _renderBodyCell: function(record, node, colIndex, options) {
             var $td = this._super.apply(this, arguments);
-            options = node.attrs.options;
+            node_options = node.attrs.options;
             if (!_.isObject(options)) {
-                options = options ? pyUtils.py_eval(options) : {};
+                node_options = node_options ? pyUtils.py_eval(node_options) : {};
             }
-            if (options.color_from) {
-                var color_field = options.color_from;
+            if (node_options.color_from) {
+                var color_field = node_options.color_from;
                 this._updateNodeStyle($td, record, node, color_field);
 
                 // Attach on click and body click listeners to show and hide popup
@@ -39,13 +39,13 @@ odoo.define("ddmrp.list_renderer_buffer_info", function(require) {
                 );
                 $(document).on("click", "*", this._onBodyClickListener.bind(this));
             }
-            if (options.buffer_id) {
+            if (node_options.buffer_id) {
                 this.field_buffer_type = "One2many";
-                this.field_buffer_id = options.buffer_id;
+                this.field_buffer_id = node_options.buffer_id;
             }
-            if (options.buffer_ids) {
+            if (node_options.buffer_ids) {
                 this.field_buffer_type = "Many2many";
-                this.field_buffer_id = options.buffer_ids;
+                this.field_buffer_id = node_options.buffer_ids;
             }
             return $td;
         },
