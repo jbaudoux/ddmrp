@@ -3,6 +3,7 @@ odoo.define("ddmrp.list_renderer_buffer_info", function(require) {
 
     var ListRenderer = require("web.ListRenderer");
     var concurrency = require("web.concurrency");
+    var pyUtils = require('web.py_utils');
 
     ListRenderer.include({
         /**
@@ -23,34 +24,28 @@ odoo.define("ddmrp.list_renderer_buffer_info", function(require) {
         _renderBodyCell: function(record, node, colIndex, options) {
             var $td = this._super.apply(this, arguments);
             options = node.attrs.options;
-            if (typeof options === "string") {
-                try {
-                    options = JSON.parse(options);
-                } catch (e) {
-                    console.log("Error while parsing JSON " + e);
-                }
+            if (!_.isObject(options)) {
+                options = options ? pyUtils.py_eval(options) : {};
             }
-            if (options) {
-                if (options.color_from) {
-                    var color_field = options.color_from;
-                    this._updateNodeStyle($td, record, node, color_field);
+            if (options.color_from) {
+                var color_field = options.color_from;
+                this._updateNodeStyle($td, record, node, color_field);
 
-                    // Attach on click and body click listeners to show and hide popup
-                    $td.children().on(
-                        "click",
-                        {record: record},
-                        this._onCellClickListener.bind(this)
-                    );
-                    $(document).on("click", "*", this._onBodyClickListener.bind(this));
-                }
-                if (options.buffer_id) {
-                    this.field_buffer_type = "One2many";
-                    this.field_buffer_id = options.buffer_id;
-                }
-                if (options.buffer_ids) {
-                    this.field_buffer_type = "Many2many";
-                    this.field_buffer_id = options.buffer_ids;
-                }
+                // Attach on click and body click listeners to show and hide popup
+                $td.children().on(
+                    "click",
+                    {record: record},
+                    this._onCellClickListener.bind(this)
+                );
+                $(document).on("click", "*", this._onBodyClickListener.bind(this));
+            }
+            if (options.buffer_id) {
+                this.field_buffer_type = "One2many";
+                this.field_buffer_id = options.buffer_id;
+            }
+            if (options.buffer_ids) {
+                this.field_buffer_type = "Many2many";
+                this.field_buffer_id = options.buffer_ids;
             }
             return $td;
         },
