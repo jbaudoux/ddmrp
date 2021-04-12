@@ -27,25 +27,27 @@ odoo.define("ddmrp.list_renderer_buffer_info", function(require) {
             if (!_.isObject(options)) {
                 node_options = node_options ? pyUtils.py_eval(node_options) : {};
             }
-            if (node_options.color_from) {
-                var color_field = node_options.color_from;
-                this._updateNodeStyle($td, record, node, color_field);
+            if (node_options) {
+                if (node_options.color_from) {
+                    var color_field = node_options.color_from;
+                    this._updateNodeStyle($td, record, node, color_field);
 
-                // Attach on click and body click listeners to show and hide popup
-                $td.children().on(
-                    "click",
-                    {record: record},
-                    this._onCellClickListener.bind(this)
-                );
-                $(document).on("click", "*", this._onBodyClickListener.bind(this));
-            }
-            if (node_options.buffer_id) {
-                this.field_buffer_type = "One2many";
-                this.field_buffer_id = node_options.buffer_id;
-            }
-            if (node_options.buffer_ids) {
-                this.field_buffer_type = "Many2many";
-                this.field_buffer_id = node_options.buffer_ids;
+                    // Attach on click and body click listeners to show and hide popup
+                    $td.children().on(
+                        "click",
+                        {record: record},
+                        this._onCellClickListener.bind(this)
+                    );
+                    $(document).on("click", "*", this._onBodyClickListener.bind(this));
+                }
+                if (node_options.buffer_id) {
+                    this.field_buffer_type = "One2many";
+                    this.field_buffer_id = node_options.buffer_id;
+                }
+                if (node_options.buffer_ids) {
+                    this.field_buffer_type = "Many2many";
+                    this.field_buffer_id = node_options.buffer_ids;
+                }
             }
             return $td;
         },
